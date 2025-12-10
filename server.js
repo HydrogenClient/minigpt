@@ -13,17 +13,13 @@ app.use(express.json());
 // Serve static files from public/
 app.use(express.static(path.join(process.cwd(), "public")));
 
-// Root route serves index.html
-app.get("/", (req, res) => {
+// Catch-all route to serve index.html for any other requests
+app.get("*", (req, res) => {
   res.sendFile(path.join(process.cwd(), "public", "index.html"));
 });
 
-// OpenAI client
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// Chat API
 app.post("/api/chat", async (req, res) => {
   try {
     const { message, model } = req.body;
@@ -37,6 +33,4 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log("Server running at http://localhost:3000");
-});
+app.listen(3000, () => console.log("Server running on http://localhost:3000"));
