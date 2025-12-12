@@ -179,6 +179,7 @@
   <div class="chat-wrapper">
     <div class="chat">
       <div class="messages" id="messages"></div>
+
       <div class="composer">
         <div class="composer-inner">
           <textarea id="input" placeholder="Message MiniGPT..."></textarea>
@@ -191,70 +192,103 @@
   <button id="newChatBtn">New Chat</button>
   <p class="disclaimer">MiniGPT — made by ChatGPT & NotDreamPVP</p>
 
-  <script>
-    const messagesEl = document.getElementById('messages');
-    const inputEl = document.getElementById('input');
-    const sendBtn = document.getElementById('sendBtn');
-    const modelSelect = document.getElementById('modelSelect');
-    const newChatBtn = document.getElementById('newChatBtn');
-    const themeToggle = document.getElementById("themeToggle");
+<script>
+const messagesEl = document.getElementById('messages');
+const inputEl = document.getElementById('input');
+const sendBtn = document.getElementById('sendBtn');
+const modelSelect = document.getElementById('modelSelect');
+const newChatBtn = document.getElementById('newChatBtn');
+const themeToggle = document.getElementById("themeToggle");
 
-    let chatHistory = []; // backend handles system message
+// Chat history stored in browser
+let chatHistory = [];
 
-    function addBubble(text, cls){
-      const div = document.createElement('div');
-      div.className = `bubble ${cls}`;
-      div.textContent = text;
-      messagesEl.appendChild(div);
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-    }
+// Add a message bubble
+function addBubble(text, cls){
+  const div = document.createElement('div');
+  div.className = `bubble ${cls}`;
+  div.textContent = text;
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
 
-    async function sendMessage(){
-      const text = inputEl.value.trim();
-      if(!text) return;
-      addBubble(text, 'user');
-      inputEl.value = '';
-      addBubble('…', 'bot');
-      const loadingBubble = messagesEl.lastChild;
-      chatHistory.push({ role: "user", content: text });
+  // Save to localStorage
+  saveChatHistory();
+}
 
-      try {
-        const res = await fetch('https://mini-gpt-backend.vercel.app/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type':'application/json' },
-          body: JSON.stringify({ message: text, model: modelSelect.value, history: chatHistory })
-        });
-        const data = await res.json();
-        loadingBubble.textContent = data.reply || 'No reply';
-        chatHistory.push({ role: "assistant", content: data.reply || '' });
-      } catch(e) {
-        loadingBubble.textContent = 'Error: ' + e.message;
-      }
-    }
+// Save chatHistory in localStorage
+function saveChatHistory() {
+  localStorage.setItem('miniGPTHistory', JSON.stringify(chatHistory));
+}
 
-    sendBtn.onclick = sendMessage;
-    inputEl.addEventListener('keydown', e => {
-      if(e.key==='Enter' && !e.shiftKey){
-        e.preventDefault();
-        sendMessage();
-      }
+// Load chatHistory from localStorage
+function loadChatHistory() {
+  const savedHistory = JSON.parse(localStorage.getItem('miniGPTHistory') || '[]');
+  savedHistory.forEach(msg => addBubble(msg.content, msg.role === 'user' ? 'user' : 'bot'));
+  chatHistory = savedHistory;
+}
+
+// Load chat on page load
+window.addEventListener('DOMContentLoaded', loadChatHistory);
+
+// Send message
+async function sendMessage() {
+  const text = inputEl.value.trim();
+  if(!text) return;
+
+  addBubble(text, 'user');
+  inputEl.value = '';
+  addBubble('…', 'bot');
+  const loadingBubble = messagesEl.lastChild;
+
+  chatHistory.push({ role: "user", content: text });
+  saveChatHistory();
+
+  try {
+    const res = await fetch('https://mini-gpt-backend.vercel.app/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ message: text, model: modelSelect.value, history: chatHistory })
     });
 
-    newChatBtn.onclick = () => {
-      messagesEl.innerHTML = '';
-      chatHistory = [];
-      addBubble("Hello! I'm MiniGPT — ask me anything!", 'bot');
-    };
+    const data = await res.json();
+    loadingBubble.textContent = data.reply || 'No reply';
 
-    themeToggle.onclick = () => {
-      document.body.classList.toggle("dark-mode");
-      themeToggle.textContent = document.body.classList.contains("dark-mode")
-        ? "☀️ Light Mode"
-        : "🌙 Dark Mode";
-    };
+    chatHistory.push({ role: "assistant", content: data.reply || '' });
+    saveChatHistory();
+  } catch(e) {
+    loadingBubble.textContent = 'Error: ' + e.message;
+  }
+}
 
-    // Initial greeting
-    addBubble("Hello! I'm MiniGPT — ask me anything!", 'bot');
-  </script>
+// Event listeners
+sendBtn.onclick = sendMessage;
+inputEl.addEventListener('keydown', e=>{
+  if(e.key==='Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+// New Chat — clears history
+newChatBtn.onclick = () => {
+  messagesEl.innerHTML = '';
+  chatHistory = [];
+  localStorage.removeItem('miniGPTHistory');
+  addBubble("Hello! I'm MiniGPT — ask me anything!", 'bot');
+};
+
+// Theme toggle
+themeToggle.onclick = () => {
+  document.body.classList.toggle("dark-mode");
+  themeToggle.textContent = document.body.classList.contains("dark-mode")
+    ? "☀️ Light Mode"
+    : "🌙 Dark Mode";
+};
+
+// Initial greeting (only if no previous chat)
+if(chatHistory.length === 0) {
+  addBubble("Hello! I'm MiniGPT — ask me anything!", 'bot');
+}
+</script>
 </body>
 </html>
