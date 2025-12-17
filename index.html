@@ -160,6 +160,13 @@
       color:#666;
       margin:12px 0;
     }
+
+    footer{
+      text-align:center;
+      font-size:12px;
+      color:#666;
+      margin:12px 0;
+    }
   </style>
 </head>
 <body>
@@ -191,88 +198,93 @@
   <button id="newChatBtn">New Chat</button>
   <p class="disclaimer">MiniGPT — made by SasoPlayzYT</p>
 
+  <!-- Footer with Privacy Policy -->
+  <footer>
+    <p><a href="/privacy-policy.html">Privacy Policy</a></p>
+  </footer>
+
   <script>
-  const messagesEl = document.getElementById('messages');
-  const inputEl = document.getElementById('input');
-  const sendBtn = document.getElementById('sendBtn');
-  const modelSelect = document.getElementById('modelSelect');
-  const newChatBtn = document.getElementById('newChatBtn');
-  const themeToggle = document.getElementById("themeToggle");
+    const messagesEl = document.getElementById('messages');
+    const inputEl = document.getElementById('input');
+    const sendBtn = document.getElementById('sendBtn');
+    const modelSelect = document.getElementById('modelSelect');
+    const newChatBtn = document.getElementById('newChatBtn');
+    const themeToggle = document.getElementById("themeToggle");
 
-  let chatHistory = []; // backend handles system message
+    let chatHistory = [];
 
-  function formatMarkdown(text) {
-    return text
-      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-      .replace(/\*(.*?)\*/g, "<em>$1</em>")
-      .replace(/`(.*?)`/g, "<code>$1</code>")
-      .replace(/\n/g, "<br>");
-  }
-
-  function addBubble(text, cls){
-    const div = document.createElement('div');
-    div.className = `bubble ${cls}`;
-    div.innerHTML = formatMarkdown(text);
-    messagesEl.appendChild(div);
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-  }
-
-  async function sendMessage(){
-    const text = inputEl.value.trim();
-    if(!text) return;
-
-    addBubble(text, 'user');
-    inputEl.value = '';
-
-    addBubble('…', 'bot');
-    const loadingBubble = messagesEl.lastChild;
-
-    chatHistory.push({ role: "user", content: text });
-
-    try {
-      const res = await fetch('https://mini-gpt-backend.vercel.app/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({
-          message: text,
-          model: modelSelect.value,
-          history: chatHistory
-        })
-      });
-
-      const data = await res.json();
-      loadingBubble.innerHTML = formatMarkdown(data.reply || 'No reply');
-      chatHistory.push({ role: "assistant", content: data.reply || '' });
-
-    } catch(e) {
-      loadingBubble.textContent = 'Error: ' + e.message;
+    function formatMarkdown(text) {
+      return text
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*(.*?)\*/g, "<em>$1</em>")
+        .replace(/`(.*?)`/g, "<code>$1</code>")
+        .replace(/\n/g, "<br>");
     }
-  }
 
-  sendBtn.onclick = sendMessage;
-
-  inputEl.addEventListener('keydown', e => {
-    if(e.key === 'Enter' && !e.shiftKey){
-      e.preventDefault();
-      sendMessage();
+    function addBubble(text, cls){
+      const div = document.createElement('div');
+      div.className = `bubble ${cls}`;
+      div.innerHTML = formatMarkdown(text);
+      messagesEl.appendChild(div);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
     }
-  });
 
-  newChatBtn.onclick = () => {
-    messagesEl.innerHTML = '';
-    chatHistory = [];
+    async function sendMessage(){
+      const text = inputEl.value.trim();
+      if(!text) return;
+
+      addBubble(text, 'user');
+      inputEl.value = '';
+
+      addBubble('…', 'bot');
+      const loadingBubble = messagesEl.lastChild;
+
+      chatHistory.push({ role: "user", content: text });
+
+      try {
+        const res = await fetch('https://mini-gpt-backend.vercel.app/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type':'application/json' },
+          body: JSON.stringify({
+            message: text,
+            model: modelSelect.value,
+            history: chatHistory
+          })
+        });
+
+        const data = await res.json();
+        loadingBubble.innerHTML = formatMarkdown(data.reply || 'No reply');
+        chatHistory.push({ role: "assistant", content: data.reply || '' });
+
+      } catch(e) {
+        loadingBubble.textContent = 'Error: ' + e.message;
+      }
+    }
+
+    sendBtn.onclick = sendMessage;
+
+    inputEl.addEventListener('keydown', e => {
+      if(e.key === 'Enter' && !e.shiftKey){
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    newChatBtn.onclick = () => {
+      messagesEl.innerHTML = '';
+      chatHistory = [];
+      addBubble("Hello! I'm MiniGPT — ask me anything!", 'bot');
+    };
+
+    themeToggle.onclick = () => {
+      document.body.classList.toggle("dark-mode");
+      themeToggle.textContent = document.body.classList.contains("dark-mode")
+        ? "☀️ Light Mode"
+        : "🌙 Dark Mode";
+    };
+
+    // Initial greeting
     addBubble("Hello! I'm MiniGPT — ask me anything!", 'bot');
-  };
-
-  themeToggle.onclick = () => {
-    document.body.classList.toggle("dark-mode");
-    themeToggle.textContent = document.body.classList.contains("dark-mode")
-      ? "☀️ Light Mode"
-      : "🌙 Dark Mode";
-  };
-
-  // Initial greeting
-  addBubble("Hello! I'm MiniGPT — ask me anything!", 'bot');
-</script>
+  </script>
 </body>
 </html>
