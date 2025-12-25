@@ -49,6 +49,18 @@
     align-items:center;
   }
 
+  /* Logo + text container */
+  .logo-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-title img {
+    width:32px;
+    height:32px;
+    border-radius:6px; /* optional */
+  }
+
   .chat-wrapper{
     flex:1;
     display:flex;
@@ -171,7 +183,10 @@
 </head>
 <body>
   <header>
-    <div>MiniGPT</div>
+    <div class="logo-title">
+      <img src="/images/minigpt-icon.png" alt="MiniGPT Icon">
+      <span>MiniGPT — Chatbot</span>
+    </div>
     <div>
       Model:
       <select id="modelSelect">
@@ -198,7 +213,6 @@
   <button id="newChatBtn">New Chat</button>
   <p class="disclaimer">MiniGPT — made by SasoPlayzYT</p>
 
-  <!-- Footer with Privacy Policy -->
   <footer>
     <p><a href="/privacy-policy.html">Privacy Policy</a></p>
   </footer>
@@ -229,14 +243,12 @@
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 
-    // Typing animation & "Thinking..."
     async function sendMessage(){
       const text = inputEl.value.trim();
       if(!text) return;
       addBubble(text,'user');
       inputEl.value='';
 
-      // "Thinking..." bubble
       const botBubble = document.createElement('div');
       botBubble.className='bubble bot';
       botBubble.textContent='Thinking...';
@@ -258,7 +270,6 @@
         const data = await res.json();
         const reply = data.reply || 'No reply';
 
-        // Typing animation
         botBubble.textContent='';
         let i=0;
         const interval = setInterval(()=>{
@@ -296,7 +307,6 @@
         : "🌙 Dark Mode";
     };
 
-    // Initial greeting
     addBubble("Hello! I'm MiniGPT — ask me anything!",'bot');
   </script>
 </body>
