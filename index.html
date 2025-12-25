@@ -229,40 +229,53 @@
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 
+    // Typing animation & "Thinking..."
     async function sendMessage(){
       const text = inputEl.value.trim();
       if(!text) return;
+      addBubble(text,'user');
+      inputEl.value='';
 
-      addBubble(text, 'user');
-      inputEl.value = '';
-
-      addBubble('…', 'bot');
-      const loadingBubble = messagesEl.lastChild;
+      // "Thinking..." bubble
+      const botBubble = document.createElement('div');
+      botBubble.className='bubble bot';
+      botBubble.textContent='Thinking...';
+      messagesEl.appendChild(botBubble);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
 
       chatHistory.push({ role: "user", content: text });
 
-      try {
-        const res = await fetch('https://mini-gpt-backend.vercel.app/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type':'application/json' },
-          body: JSON.stringify({
-            message: text,
-            model: modelSelect.value,
-            history: chatHistory
+      try{
+        const res = await fetch('https://mini-gpt-backend.vercel.app/api/chat',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({
+            message:text,
+            model:modelSelect.value,
+            history:chatHistory
           })
         });
-
         const data = await res.json();
-        loadingBubble.innerHTML = formatMarkdown(data.reply || 'No reply');
-        chatHistory.push({ role: "assistant", content: data.reply || '' });
+        const reply = data.reply || 'No reply';
 
-      } catch(e) {
-        loadingBubble.textContent = 'Error: ' + e.message;
+        // Typing animation
+        botBubble.textContent='';
+        let i=0;
+        const interval = setInterval(()=>{
+          botBubble.textContent += reply.charAt(i);
+          i++;
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+          if(i>=reply.length) clearInterval(interval);
+        },25);
+
+        chatHistory.push({ role: "assistant", content: reply });
+
+      }catch(e){
+        botBubble.textContent='Error: '+e.message;
       }
     }
 
     sendBtn.onclick = sendMessage;
-
     inputEl.addEventListener('keydown', e => {
       if(e.key === 'Enter' && !e.shiftKey){
         e.preventDefault();
@@ -270,21 +283,21 @@
       }
     });
 
-    newChatBtn.onclick = () => {
-      messagesEl.innerHTML = '';
-      chatHistory = [];
-      addBubble("Hello! I'm MiniGPT — ask me anything!", 'bot');
+    newChatBtn.onclick = ()=>{
+      messagesEl.innerHTML='';
+      chatHistory=[];
+      addBubble("Hello! I'm MiniGPT — ask me anything!",'bot');
     };
 
-    themeToggle.onclick = () => {
+    themeToggle.onclick = ()=>{
       document.body.classList.toggle("dark-mode");
-      themeToggle.textContent = document.body.classList.contains("dark-mode")
+      themeToggle.textContent=document.body.classList.contains("dark-mode")
         ? "☀️ Light Mode"
         : "🌙 Dark Mode";
     };
 
     // Initial greeting
-    addBubble("Hello! I'm MiniGPT — ask me anything!", 'bot');
+    addBubble("Hello! I'm MiniGPT — ask me anything!",'bot');
   </script>
 </body>
 </html>
