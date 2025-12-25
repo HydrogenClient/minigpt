@@ -4,6 +4,10 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>MiniGPT — Chatbot</title>
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="images/minigpt-favicon.png">
+
 <style>
   :root{
     --bg: #f7f7f8;
@@ -47,18 +51,6 @@
     display:flex;
     justify-content:space-between;
     align-items:center;
-  }
-
-  /* Logo + text container */
-  .logo-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .logo-title img {
-    width:32px;
-    height:32px;
-    border-radius:6px; /* optional */
   }
 
   .chat-wrapper{
@@ -183,10 +175,7 @@
 </head>
 <body>
   <header>
-    <div class="logo-title">
-      <img src="/images/minigpt-icon.png" alt="MiniGPT Icon">
-      <span>MiniGPT — Chatbot</span>
-    </div>
+    <div>MiniGPT — Chatbot</div>
     <div>
       Model:
       <select id="modelSelect">
@@ -232,7 +221,7 @@
         .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
         .replace(/\*(.*?)\*/g, "<em>$1</em>")
         .replace(/`(.*?)`/g, "<code>$1</code>")
-        .replace(/\n/g, "<br>");
+        .replace(/\n/g,"<br>");
     }
 
     function addBubble(text, cls){
