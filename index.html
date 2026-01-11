@@ -1,16 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MiniGPT — Chatbot</title>
-
-<!-- Favicon -->
 <link rel="icon" type="image/png" href="images/minigpt-favicon.png">
 
 <!-- Load AdSense once -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
-        crossorigin="anonymous"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" crossorigin="anonymous"></script>
 
 <style>
 :root{
@@ -39,11 +36,10 @@ body{
   margin:0;
   padding:0;
   background:var(--bg);
+  color:var(--text);
   display:flex;
   flex-direction:column;
   height:100vh;
-  color:var(--text);
-  transition: background 0.3s, color 0.3s;
 }
 
 header{
@@ -61,27 +57,23 @@ header{
   flex:1;
   display:flex;
   justify-content:center;
-  position: relative;
+  background:var(--bg);
   overflow:hidden;
 }
 
-.ad-sidebar-left,
-.ad-sidebar-right {
-  position: sticky;
-  top: 20px;
-  width: 160px;
-  flex-shrink: 0;
+.ad-sidebar-left, .ad-sidebar-right{
+  width:160px;
+  flex-shrink:0;
 }
-
-.ad-sidebar-left { left:0; }
-.ad-sidebar-right { right:0; }
 
 .chat-wrapper{
   flex:1;
   max-width:820px;
   display:flex;
   flex-direction:column;
-  margin:0 170px; /* leave space for side ads */
+  background:var(--panel);
+  border-left:1px solid var(--border);
+  border-right:1px solid var(--border);
 }
 
 .messages{
@@ -99,7 +91,6 @@ header{
   box-shadow:0 1px 2px rgba(0,0,0,0.04);
   white-space:pre-wrap;
   font-size:15px;
-  transition: background 0.3s, color 0.3s;
 }
 
 .bot{ background:var(--bot-bg); border:1px solid var(--border); align-self:flex-start; }
@@ -108,10 +99,8 @@ header{
 .composer{
   padding:20px;
   border-top:1px solid var(--border);
-  background:var(--panel);
   display:flex;
   justify-content:center;
-  transition: background 0.3s;
 }
 
 .composer-inner{
@@ -128,7 +117,6 @@ textarea{
   resize:none;
   font-size:15px;
   background:#fafafa;
-  transition: background 0.3s, color 0.3s;
 }
 
 button{
@@ -139,7 +127,6 @@ button{
   font-size:15px;
   color:white;
   cursor:pointer;
-  transition: background 0.3s;
 }
 
 select{
@@ -148,7 +135,6 @@ select{
   border:1px solid var(--border);
   background:var(--panel);
   color:var(--text);
-  transition: background 0.3s, color 0.3s;
 }
 
 #newChatBtn{
@@ -175,31 +161,16 @@ select{
   margin-left:12px;
 }
 
-.disclaimer{
+.disclaimer, footer{
   text-align:center;
   font-size:12px;
   color:#666;
   margin:12px 0;
 }
 
-footer{
-  text-align:center;
-  font-size:12px;
-  color:#666;
-  margin:12px 0;
-}
-
-.adsbygoogle{
-  margin:12px 0;
-}
-
-@media (max-width:1000px){
-  .ad-sidebar-left, .ad-sidebar-right {
-    display:none;
-  }
-  .chat-wrapper{
-    margin:0 20px;
-  }
+@media(max-width:1000px){
+  .ad-sidebar-left, .ad-sidebar-right{ display:none; }
+  .chat-wrapper{ max-width:100%; }
 }
 </style>
 </head>
@@ -217,27 +188,18 @@ footer{
   </div>
 </header>
 
-<!-- Side ads -->
-<div class="ad-sidebar-left">
-  <ins class="adsbygoogle"
-       style="display:block"
-       data-ad-client="ca-pub-7906162290869645"
-       data-ad-slot="3907164760"
-       data-ad-format="vertical"></ins>
-  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-</div>
-
-<div class="ad-sidebar-right">
-  <ins class="adsbygoogle"
-       style="display:block"
-       data-ad-client="ca-pub-7906162290869645"
-       data-ad-slot="3907164760"
-       data-ad-format="vertical"></ins>
-  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-</div>
-
-<!-- Chat area -->
 <div class="main-container">
+  <!-- Left Ad -->
+  <div class="ad-sidebar-left">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-7906162290869645"
+         data-ad-slot="3907164760"
+         data-ad-format="vertical"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <!-- Chat Area -->
   <div class="chat-wrapper">
     <div class="messages" id="messages"></div>
     <div class="composer">
@@ -246,13 +208,21 @@ footer{
         <button id="sendBtn">Send</button>
       </div>
     </div>
-
     <button id="newChatBtn">New Chat</button>
     <p class="disclaimer">MiniGPT — made by SasoPlayzYT</p>
-
     <footer>
       <p><a href="/privacy-policy.html">Privacy Policy</a></p>
     </footer>
+  </div>
+
+  <!-- Right Ad -->
+  <div class="ad-sidebar-right">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-7906162290869645"
+         data-ad-slot="3907164760"
+         data-ad-format="vertical"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
   </div>
 </div>
 
@@ -266,7 +236,6 @@ const themeToggle = document.getElementById("themeToggle");
 
 let chatHistory = [];
 
-// Markdown formatting
 function formatMarkdown(text){
   return text.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
              .replace(/\*(.*?)\*/g,"<em>$1</em>")
@@ -282,7 +251,6 @@ function addBubble(text, cls){
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-// Typing animation for bot
 function typeText(bubble, text, speed=25){
   bubble.textContent='';
   let i=0;
@@ -341,7 +309,6 @@ themeToggle.onclick = ()=>{
     : "🌙 Dark Mode";
 };
 
-// Initial greeting
 addBubble("Hello! I'm MiniGPT — ask me anything!",'bot');
 </script>
 </body>
