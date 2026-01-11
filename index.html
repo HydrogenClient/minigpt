@@ -67,9 +67,9 @@ header{
 
 .ad-sidebar-left,
 .ad-sidebar-right {
-  position: sticky; 
+  position: sticky;
   top: 20px;
-  width: 160px; 
+  width: 160px;
   flex-shrink: 0;
 }
 
@@ -266,6 +266,7 @@ const themeToggle = document.getElementById("themeToggle");
 
 let chatHistory = [];
 
+// Markdown formatting
 function formatMarkdown(text){
   return text.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
              .replace(/\*(.*?)\*/g,"<em>$1</em>")
@@ -281,6 +282,7 @@ function addBubble(text, cls){
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
+// Typing animation for bot
 function typeText(bubble, text, speed=25){
   bubble.textContent='';
   let i=0;
@@ -339,6 +341,7 @@ themeToggle.onclick = ()=>{
     : "🌙 Dark Mode";
 };
 
+// Initial greeting
 addBubble("Hello! I'm MiniGPT — ask me anything!",'bot');
 </script>
 </body>
